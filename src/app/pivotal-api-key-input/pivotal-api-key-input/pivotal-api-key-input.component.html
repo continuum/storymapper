@@ -1,0 +1,63 @@
+<h2 class="pivotal-api-key-input_h2"> Hola! Ingresa tu API token de PivotalTracker, es totalmente seguro!</h2>
+
+<div class="pivotal-api-key-input-help-container">
+  <span class="pivotal-api-key-input-help-span"
+  matTooltip="en https://www.pivotaltracker.com/profile, última sección"
+  matTooltipPosition="right"
+  matTooltipHideDelay=2000>¿De dónde obtengo esto?</span>
+</div>
+
+
+<form class="example-form">
+  <mat-form-field class="pivotal-api-key-input-form-field-wide">
+    <input class="pivotalApiTokenInput"
+          #pivotalApiTokenInput
+          matInput
+          placeholder="API token de Pivotal"
+          value="b9c1df34a39f7174d98e76cc58ea1e10">
+  </mat-form-field>
+  <button type="submit"
+          mat-raised-button color="primary"
+          (click)="submitPivotalApiKey($event)"
+          (submit)="preventDefaultSubmit($event)">Guardar</button>
+
+
+
+  <div style="background-color: black; color: white">
+    <ng-template *ngIf="!( user | async ); else withUser">
+      <span>Sin usuario</span>
+    </ng-template>
+    <ng-template #withUser>
+      <h3>Hola, {{ (user | async).name }}!</h3>
+      <div>Estos son tus proyectos:</div>
+      <ul>
+        <li *ngFor="let projectData of (user | async).projects">
+          {{ projectData.project_name }} (id: {{ projectData.project_id }} )
+          <button mat-raised-button
+                  color="primary"
+                  (submit)="dontSubmit($event)"
+                  (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
+          <ng-container *ngIf="projects && getKeys(projects[projectData.project_id]?.stories)?.length > 0">
+            <div style="color:white">
+              <ul>
+                <li *ngFor="let story of getKeys(projects[projectData.project_id].stories); let i = index;"
+                    [ngStyle]="determineStoryStyle(story)">
+                   {{ story }}
+                </li>
+              </ul>
+
+            </div>
+
+          </ng-container>
+        </li>
+
+      </ul>
+    </ng-template>
+
+  </div>
+
+
+
+
+
+</form>
