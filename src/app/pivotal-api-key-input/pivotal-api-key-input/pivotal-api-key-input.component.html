@@ -8,18 +8,22 @@
 </div>
 
 
-<form class="example-form">
-  <mat-form-field class="pivotal-api-key-input-form-field-wide">
-    <input class="pivotalApiTokenInput"
-          #pivotalApiTokenInput
-          matInput
-          placeholder="API token de Pivotal"
-          value="b9c1df34a39f7174d98e76cc58ea1e10">
-  </mat-form-field>
-  <button type="submit"
-          mat-raised-button color="primary"
-          (click)="submitPivotalApiKey($event)"
-          (submit)="preventDefaultSubmit($event)">Guardar</button>
+<form class="example-form" [ngStyle]="{ 'display': 'flex', 'width': 'auto', 'flex-direction': 'column' }">
+  <div [ngStyle]="{'width': '100%'}">
+      <mat-form-field class="pivotal-api-key-input-form-field-wide">
+          <input class="pivotalApiTokenInput"
+                #pivotalApiTokenInput
+                matInput
+                placeholder="API token de Pivotal"
+                value="b9c1df34a39f7174d98e76cc58ea1e10">
+        </mat-form-field>
+        <button type="submit"
+                mat-raised-button color="primary"
+                (click)="submitPivotalApiKey($event)"
+                (submit)="preventDefaultSubmit($event)">Guardar</button>
+
+  </div>
+
 
 
 
@@ -27,24 +31,54 @@
     <ng-template *ngIf="!( user | async ); else withUser">
       <span>Sin usuario</span>
     </ng-template>
+
     <ng-template #withUser>
+      <div>
+
+
+
+
+      </div>
       <h3>Hola, {{ (user | async).name }}!</h3>
       <div>Estos son tus proyectos:</div>
       <ul>
+
+
         <li *ngFor="let projectData of (user | async).projects">
           {{ projectData.project_name }} (id: {{ projectData.project_id }} )
           <button mat-raised-button
                   color="primary"
                   (submit)="dontSubmit($event)"
                   (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
-          <ng-container *ngIf="projects && getKeys(projects[projectData.project_id]?.stories)?.length > 0">
+
+
+          <ng-container *ngIf="projects && getProjectReleases(projectData.project_id).length > 0">
             <div style="color:white">
-              <ul>
-                <li *ngFor="let story of getKeys(projects[projectData.project_id].stories); let i = index;"
-                    [ngStyle]="determineStoryStyle(story)">
-                   {{ story }}
-                </li>
-              </ul>
+
+              <div id="storiesTable" #storiesTable>
+
+                <div id="storiesTableHeader" #storiesTableHeader>
+                    <span *ngFor="let tag of projects[projectData.project_id].allTags;">
+                        {{ tag }}
+                    </span>
+                </div>
+
+
+                <div id="storiesTableBody">
+
+                  <span *ngFor="let tag of getProjectTags(projectData.project_id);"
+                    class="stories-table-column">
+
+                    <div
+                    *ngFor="let story of getStoriesByTag(projectData.project_id, tag)"
+                    class="stories-table-row">
+                      {{ story.name }}
+                    </div>
+                  </span>
+
+                </div>
+
+              </div>
 
             </div>
 

@@ -85,17 +85,28 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
    // debugger
     event.preventDefault();
     const self = this;
+    console.log("PROJECT ID " + projectId);
+
    // let stors: any = "asd";
     this.subscriptions.push(
       this._pivotalDataService.getProjectStories(projectId)
           .map((stories: Array<any>) => stories)
           .subscribe((stories: Array<any>) => {
+          //  debugger
+
+            // TODO: Fix many redundant iterations...
             self.projects = {...self.projects,
                              ...{ [projectId]: {
-                                     stories: self.groupStoriesByLabel(stories)
-                                   }
+                                      byTag: self.groupStoriesByTag(stories),
+                                      allReleases: stories.filter(st => st.story_type === 'release').map(st => st.name) ,
+                                      allTags: Array.from(self.getTagList(stories))
+                                    }
                                 }
                             };
+            console.log("self.projects");
+            console.log(self.projects);
+            // console.log("by tag");
+            //  console.log(self.groupStoriesByTag(stories));
           })
     );
   }
@@ -104,7 +115,9 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
     this._pivotalDataService.getProjectLabels(projectId);
   }
 
-  groupStoriesByLabel(stories: Array<any>) {
+  groupStoriesByReleaseAndLabel(stories: Array<any>) {
+    console.log("STORIES ARE => ");
+    console.log(stories);
     // Stories from pivotal come stored in the order they are in, so
     // if you have
     // story1,
@@ -146,8 +159,69 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
     // uniqueLabels.reduce((accumulator, label, index, arr) => {
 
     // }, {});
+    console.log("stories by release and label");
     console.log(storiesByReleaseAndLabel);
     return storiesByReleaseAndLabel;
+  }
+
+  groupStoriesByTag(stories: Array<any>) {
+    // const tags = stories.
+//    const tags =
+
+    // For each story, add a key noting the Release it belongs to
+    const storiesWithReleaseName = stories.reduce((acc, story, index) => {
+        // If a story is a release, return it with its index
+        // among all of the stories.
+        return story.story_type === 'release' ? acc.push({...story, index}) && acc : acc;
+      }, [])
+      .map(rel => [rel.index, rel.name])
+      .reduce((acc, elem, arrayIndex, array) => {
+        // Then loop over all of the stories and
+        // put the ones with indexes below (someRelease)
+        // in a key with someReleases.name
+        // then, group those stories by label.
+        const [releaseIndex, releaseName] = elem;
+        const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
+        const storiesWithRelease = stories.slice(previousReleaseIndex, releaseIndex)
+                                          .map(story => {
+                                            story["release"] = releaseName;
+                                            return story;
+                                          });
+        return acc.concat(storiesWithRelease);
+      }, []);
+
+    const tagList = this.getTagList(stories);
+
+    console.log("TAGSLISTS");
+    console.log(tagList);
+    // debugger
+    const storiesWithNoTag = stories.filter(story => story.labels.length === 0);
+
+    const storiesByTag = Array.from(tagList).reduce((acc, tag) => {
+      const storiesWithTag = stories.filter(story => new Set(story.labels.map(l => l.name)).has(tag));
+      if (acc[`${tag}`]) { return acc[`${tag}`].push(storiesWithTag) && acc; }
+      acc[`${tag}`] = storiesWithTag;
+      return acc;
+    }, {});
+
+    console.log("STORIES BY TAG");
+    console.log(storiesByTag);
+
+
+
+
+    return storiesByTag;
+  }
+
+  getTagList(stories) {
+    return stories.reduce((tags, story) => {
+      if (story.labels.length === 0) {
+        story.labels.push({ name: "No tag" });
+        tags.add("No tag");
+      }
+      story.labels.forEach(label => tags.add(label.name));
+      return tags;
+    }, new Set());
   }
 
   // chunkByRelease(stories, startIndex, releaseIndex, result = []) {
@@ -160,6 +234,10 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
   // filterByIndex(_, index) {
   //   return index < releaseIndex;
   // }
+
+  range(length, startOffset) {
+    return Array.apply({ length }).map((_, i) => startOffset + i);
+  }
 
   groupByLabel(groupedStories, currentStory) {
    // (groupedStories, currentStory) => {
@@ -178,10 +256,44 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  getKeys(hash) {
-    //debugger
-    return Object.keys(hash);
+  getKeys(hash, _) {
+// debugger
+    return Object.keys(hash) || [];
   }
+
+  // getTags(storiesObject) {
+  //   return Object.keys(storiesObject);
+  // }
+
+  getProjectTags(projectId, release?) {
+    //  debugger
+    if (release) { return Object.keys(this.projects[projectId].byTag[release]); }
+    return Object.keys(this.projects[projectId].byTag);
+  }
+
+  getProjectReleases(projectId) {
+    // debugger;
+   if (!this.projects[projectId]) { return []; }
+   return Object.keys(this.projects[projectId].byTag);
+  }
+
+  // getReleaseTags(projectId) {
+  //  // debugger
+  //   const releases = this.projects[projectId];
+  //   return Object.keys(releases).map(releaseName => {
+
+  //   }, releases);
+  // }
+
+  getStoriesByTag(projectId, tag, release?) {
+    // debugger
+    if (release) { return this.projects[projectId].byTag[tag].filter(story => story.release === release); }
+    return this.projects[projectId].byTag[tag];
+  }
+
+
+
+
 
 }
 
