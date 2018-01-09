@@ -40,5 +40,34 @@
     font-weight: bold;
   }
 
+  .stories-table-column {
+    width: 150px !important;
+    max-width: 150px !important;
+    display: inline-block;
+  }
+
+  .stories-table-row {
+
+    height: 100px;
+    border: 1px solid blue !important;
+    display:block;
+
+  }
+
+  .stories-table-column-container {
+    display:flex;
+    width: 100% !important;
+    background-color: red !important;
+    border: 1px solid blue;
+    max-width: none !important;
+    height: auto !important;
+  }
+
+  .release-name-ribbon {
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+  }
+
 
 }
