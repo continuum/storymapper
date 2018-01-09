@@ -27,14 +27,13 @@
 
 
 
-  <div style="background-color: black; color: white">
+  <div style="color: darkgrey;">
     <ng-template *ngIf="!( user | async ); else withUser">
       <span>Sin usuario</span>
     </ng-template>
 
     <ng-template #withUser>
       <div>
-
 
 
 
@@ -52,29 +51,26 @@
                   (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
 
 
-          <ng-container style="color: white"
+          <ng-container style="color: darkgrey"
           *ngIf="projects && getProjectReleases(projectData.project_id).length > 0">
             <!-- <div style="color:white"> -->
 
               <div id="storiesTable" #storiesTable>
 
                 <div id="storiesTableHeader" #storiesTableHeader>
-                    <span *ngFor="let tag of projects[projectData.project_id].allTags;">
+                    <span
+                    class="stories-table-header-item"
+                    *ngFor="let tag of projects[projectData.project_id].allTags;">
                         {{ tag }}
                     </span>
                 </div>
 
 
-                <div id="storiesTableBody" style="flex-direction: column;">
+                <div id="storiesTableBody">
                   <!-- TODO: Remove awful !importants -->
-                  <div class="releases" style="display: block;
-                                               width: 100% !important;
-                                               background-color: red !important;
-                                               border: 1px solid blue;
-                                               max-width: none !important;
-                                               height: auto !important;"
-                  *ngFor="let release of projects[projectData.project_id].allReleases"
-                  [ngClass]=release>
+                  <div class="releases"
+                      *ngFor="let release of projects[projectData.project_id].allReleases"
+                      [ngClass]=release>
 
                       <div class="stories-table-column-container">
                           <span *ngFor="let tag of getProjectTags(projectData.project_id);"
@@ -92,9 +88,9 @@
 
                       </div>
 
-                        <span
-                        class="release-name-ribbon"
-                        style="background-color: yellow; color: blue"> {{ release }}</span>
+                        <span class="release-name-ribbon">
+                          {{ release }}
+                        </span>
 
                   </div>
 
