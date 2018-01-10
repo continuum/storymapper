@@ -1,0 +1,22 @@
+
+    <h3>Hola, {{ (user | async).name }}!</h3>
+    <div>Estos son tus proyectos:</div>
+    <ul class="pivotal-project-list-project-list">
+
+
+      <li class="pivotal-project-list-project-list-item"
+          *ngFor="let projectData of (user | async).projects">
+        {{ projectData.project_name }} (id: {{ projectData.project_id }} )
+        <button mat-raised-button
+                color="primary"
+                (submit)="dontSubmit($event)"
+                (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
+
+      <!-- dibujar el nuevo component solo si "projects && getProjectReleases(projectData.project_id).length > 0" -->
+        <ng-container *ngIf="(projects | async)">
+          <app-pivotal-project-stories-table
+            [projectId]=projectData.project_id></app-pivotal-project-stories-table>
+        </ng-container>
+      </li>
+    </ul>
+

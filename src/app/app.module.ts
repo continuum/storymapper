@@ -43,12 +43,16 @@ import {
   MatTooltipModule,
   MatStepperModule
 } from '@angular/material';
+import { PivotalProjectListComponent } from './pivotal-project-list/pivotal-project-list.component';
+import { PivotalProjectStoriesTableComponent } from './pivotal-project-stories-table/pivotal-project-stories-table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PivotalApiKeyInputComponent,
-    HeaderComponent
+    HeaderComponent,
+    PivotalProjectListComponent,
+    PivotalProjectStoriesTableComponent
   ],
   imports: [
     HttpClientModule,

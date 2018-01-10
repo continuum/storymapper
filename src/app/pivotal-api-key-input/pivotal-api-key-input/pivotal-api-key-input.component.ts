@@ -71,7 +71,7 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
         .saveApiToken(this.pivotalApiTokenInput
                           .nativeElement
                           .value);
-    this.user = this._pivotalDataService.getUser();
+    this.user = this._pivotalDataService.user;
                   //  .map(userData => JSON.stringify(userData));
 
   }
@@ -81,39 +81,39 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  fetchProjectStories(event, projectId) {
-   // debugger
-    event.preventDefault();
-    const self = this;
-    console.log("PROJECT ID " + projectId);
+  // fetchProjectStories(event, projectId) {
+  //  // debugger
+  //   event.preventDefault();
+  //   const self = this;
+  //   console.log("PROJECT ID " + projectId);
 
-   // let stors: any = "asd";
-    this.subscriptions.push(
-      this._pivotalDataService.getProjectStories(projectId)
-          .map((stories: Array<any>) => stories)
-          .subscribe((stories: Array<any>) => {
-          //  debugger
+  //  // let stors: any = "asd";
+  //   this.subscriptions.push(
+  //     this._pivotalDataService.getProjectStories(projectId)
+  //         .map((stories: Array<any>) => stories)
+  //         .subscribe((stories: Array<any>) => {
+  //         //  debugger
 
-            // TODO: Fix many redundant iterations...
-            self.projects = {...self.projects,
-                             ...{ [projectId]: {
-                                      byTag: self.groupStoriesByTag(stories),
-                                      allReleases: stories.filter(st => st.story_type === 'release').map(st => st.name) ,
-                                      allTags: Array.from(self.getTagList(stories))
-                                    }
-                                }
-                            };
-            console.log("self.projects");
-            console.log(self.projects);
-            // console.log("by tag");
-            //  console.log(self.groupStoriesByTag(stories));
-          })
-    );
-  }
+  //           // TODO: Fix many redundant iterations...
+  //           self.projects = {...self.projects,
+  //                            ...{ [projectId]: {
+  //                                     byTag: self.groupStoriesByTag(stories),
+  //                                     allReleases: stories.filter(st => st.story_type === 'release').map(st => st.name) ,
+  //                                     allTags: Array.from(self.getTagList(stories))
+  //                                   }
+  //                               }
+  //                           };
+  //           console.log("self.projects");
+  //           console.log(self.projects);
+  //           // console.log("by tag");
+  //           //  console.log(self.groupStoriesByTag(stories));
+  //         })
+  //   );
+  // }
 
-  fetchProjectLabels(projectId) {
-    this._pivotalDataService.getProjectLabels(projectId);
-  }
+  // fetchProjectLabels(projectId) {
+  //   this._pivotalDataService.getProjectLabels(projectId);
+  // }
 
   groupStoriesByReleaseAndLabel(stories: Array<any>) {
     console.log("STORIES ARE => ");
@@ -286,7 +286,8 @@ export class PivotalApiKeyInputComponent implements OnInit, OnDestroy {
   // }
 
   getStoriesByTag(projectId, tag, release?) {
-    // debugger
+    //
+     debugger
     if (release) { return this.projects[projectId].byTag[tag].filter(story => story.release === release); }
     return this.projects[projectId].byTag[tag];
   }

@@ -1,0 +1,51 @@
+<!-- <ng-container style="color: darkgrey"
+*ngIf="projects && getProjectReleases(projectData.project_id).length > 0"> -->
+
+<ng-container *ngIf="(projects | async)[projectId]">
+
+
+    <div style="color: darkgrey;"
+         id="storiesTable"
+         #storiesTable>
+
+      <div id="storiesTableHeader" #storiesTableHeader>
+          <span
+          class="stories-table-header-item"
+          *ngFor="let tag of (projects | async)[projectId].allTags;">
+              {{ tag }}
+          </span>
+      </div>
+
+
+      <div id="storiesTableBody">
+
+        <div class="releases"
+            *ngFor="let release of (projects | async)[projectId].allReleases"
+            [ngClass]=release>
+
+            <div class="stories-table-column-container">
+              <span *ngFor="let tag of (getProjectTags(projectId) | async);"
+                class="stories-table-column"
+                [ngClass]=tag>
+                <span
+                  *ngFor="let story of (getStoriesByTag(projectId, tag, release) | async);"
+                  class="stories-table-row"
+                  [ngClass]=story.name>
+                  {{ story.name }}
+
+
+                </span>
+              </span>
+            </div>
+            <span class="release-name-ribbon">
+              {{ release }}
+            </span>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </ng-container>
+<!-- </ng-container> -->
