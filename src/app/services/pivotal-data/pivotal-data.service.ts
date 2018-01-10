@@ -31,8 +31,8 @@ export class PivotalDataService {
     this._user = this.fetchUserData();
     this._projects = this._projectsScanner.startWith(emptyProjectsHash)
                                           .scan((projectsAccumulator, project) => {
-                                            console.log("projectScanner");
-                                            console.log(project);
+                                            // console.log("projectScanner");
+                                            // console.log(project);
                                             return { ...projectsAccumulator, ...project };
                                           })
                                           .publishReplay(1)
@@ -50,8 +50,9 @@ export class PivotalDataService {
   // }
 
   fetchUserData() {
+    const headers = this.setHeaders();
     return this._http
-                .get(`${this.PIVOTAL_API_URL}/me`, { headers: this.setHeaders() })
+                .get(`${this.PIVOTAL_API_URL}/me`, { headers })
                 .publishReplay(1)
                 .refCount();
   }
