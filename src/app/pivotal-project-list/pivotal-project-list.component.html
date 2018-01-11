@@ -6,11 +6,13 @@
 
       <li class="pivotal-project-list-project-list-item"
           *ngFor="let projectData of (user | async).projects">
-        {{ projectData.project_name }} (id: {{ projectData.project_id }} )
-        <button mat-raised-button
-                color="primary"
-                (submit)="dontSubmit($event)"
-                (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
+        <div>
+          <span> {{ projectData.project_name }} (id: {{ projectData.project_id }} ) </span>
+          <button mat-raised-button
+                  color="primary"
+                  (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
+        </div>
+
 
       <!-- dibujar el nuevo component solo si "projects && getProjectReleases(projectData.project_id).length > 0" -->
         <ng-container *ngIf="(projects | async)">

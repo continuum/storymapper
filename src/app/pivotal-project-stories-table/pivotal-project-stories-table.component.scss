@@ -5,6 +5,8 @@
 
 
 #storiesTable {
+  color: darkgrey;
+  display: inline-block;
   #storiesTableHeader, #storiesTableBody {
     display:flex;
   }
@@ -57,7 +59,6 @@
   }
 
   .stories-table-row {
-
     min-height: 100px;
     height: auto;
     display:block;
@@ -70,7 +71,6 @@
 
   .stories-table-column-container {
     display:flex;
-    width: 100% !important;
     border-left: 1px solid darkgrey;
     border-right: 1px solid darkgrey;
     max-width: none;
@@ -78,7 +78,6 @@
   }
 
   .release-name-ribbon {
-    width: 100%;
     max-width: none;
     display: block;
     border-left: 1px solid darkgrey;

@@ -119,10 +119,9 @@ export class PivotalDataService {
                     // in a key with someReleases.name
                     const [releaseIndex, releaseName] = elem;
                     const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
-                    const storiesWithRelease = stories.slice(previousReleaseIndex, releaseIndex)
-                                                      .map(story => {
-                                                        return {...story, release: releaseName};
-                                                      });
+                    const storiesWithRelease =
+                      stories.slice(previousReleaseIndex, releaseIndex)
+                             .map(story => ({...story, release: releaseName}));
                     return acc.concat(storiesWithRelease);
                   }, []);
   }

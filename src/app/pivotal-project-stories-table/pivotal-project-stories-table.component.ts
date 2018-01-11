@@ -15,34 +15,12 @@ export class PivotalProjectStoriesTableComponent implements OnInit {
   @Input() projectId: number;
 
   constructor(private _pivotalDataService: PivotalDataService) {
-    this.projects = this._pivotalDataService.projects.map(x => x);
+    this.projects = this._pivotalDataService.projects;
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() { }
 
   getProjectTags(projectId, release?) {
-    //  debugger
-  //   if (release) {
-  //     return Object.keys(this.projects.map(projects => {
-  //       console.log("asd");
-  //       return projects[projectId].byTag[release];
-  //     }));
-  //  }
-
-  //   return Object.keys(this.projects.map(projects => projects[projectId].byTag));
-
-
-  //   if (release) {
-  //     return this.projects.map(projects => {
-  //       console.log("asd");
-  //       return Object.keys(projects[projectId].byTag[release]);
-  //     });
-  //  }
-
-  //   return this.projects.map(projects => Object.keys(projects[projectId].byTag));
-
     return this.projects.map(projects => projects[projectId].allTags);
   }
 
@@ -50,8 +28,8 @@ export class PivotalProjectStoriesTableComponent implements OnInit {
     if (release) {
        return this.projects.map(x => x[projectId])
                            .startWith([])
-                           .scan((acc, projects) =>
-                              acc.concat(projects.byTag[tag])
+                           .scan((acc, project) =>
+                              acc.concat(project.byTag[tag])
                                  .filter(st => st.story_type !== 'release'
                                             && st.release === release)
                             );
