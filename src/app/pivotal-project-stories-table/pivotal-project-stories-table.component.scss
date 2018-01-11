@@ -36,6 +36,9 @@
     min-width: 150px;
     width: 150px;
     max-width: 150px;
+    background-color: #303F9F;
+    color: white;
+
     &:first-of-type {
       border-left: 1px solid darkgrey;
     }
@@ -83,8 +86,8 @@
     border-left: 1px solid darkgrey;
     border-right: 1px solid darkgrey;
     border-top: 1px solid darkgrey;
-    background-color: yellow;
-    color: blue;
+    background-color: #C5CAE9;
+    color: #212121;
     text-align: left;
   }
 
