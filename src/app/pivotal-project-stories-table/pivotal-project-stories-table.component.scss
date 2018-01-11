@@ -5,7 +5,7 @@
 
 
 #storiesTable {
-  color: darkgrey;
+  color: #757575;
   display: inline-block;
   #storiesTableHeader, #storiesTableBody {
     display:flex;
@@ -17,8 +17,8 @@
     .releases {
       display: block;
       width: 100% !important;
-      border-top: 1px solid darkgrey;
-      border-bottom: 1px solid darkgrey;
+      border-top: 1px solid #BDBDBD;
+      border-bottom: 1px solid #BDBDBD;
       max-width: none;
       height: auto;
     }
@@ -30,9 +30,9 @@
   }
   .stories-table-header-item {
     word-wrap: break-word;
-    border-top: 1px solid darkgrey;
+    border-top: 1px solid #BDBDBD;
     border-left: none;
-    border-right: 1px solid darkgrey;
+    border-right: 1px solid #BDBDBD;
     min-width: 150px;
     width: 150px;
     max-width: 150px;
@@ -40,10 +40,10 @@
     color: white;
 
     &:first-of-type {
-      border-left: 1px solid darkgrey;
+      border-left: 1px solid #BDBDBD;
     }
     &:last-of-type {
-      border-right: 1px solid darkgrey;
+      border-right: 1px solid #BDBDBD;
     }
   }
 
@@ -52,7 +52,7 @@
     max-width: 150px;
     display: inline-block;
     border-left: none;
-    border-right: 1px solid darkgrey;
+    border-right: 1px solid #BDBDBD;
     &:first-of-type {
       border-left: none;
     }
@@ -65,7 +65,7 @@
     min-height: 100px;
     height: auto;
     display:block;
-    border-bottom: 1px solid darkgrey;
+    border-bottom: 1px solid #BDBDBD;
     min-width: 150px;
     width: 150px;
     max-width: 150px;
@@ -74,8 +74,8 @@
 
   .stories-table-column-container {
     display:flex;
-    border-left: 1px solid darkgrey;
-    border-right: 1px solid darkgrey;
+    border-left: 1px solid #BDBDBD;
+    border-right: 1px solid #BDBDBD;
     max-width: none;
     height: auto !important;
   }
@@ -83,9 +83,9 @@
   .release-name-ribbon {
     max-width: none;
     display: block;
-    border-left: 1px solid darkgrey;
-    border-right: 1px solid darkgrey;
-    border-top: 1px solid darkgrey;
+    border-left: 1px solid #BDBDBD;
+    border-right: 1px solid #BDBDBD;
+    border-top: 1px solid #BDBDBD;
     background-color: #C5CAE9;
     color: #212121;
     text-align: left;

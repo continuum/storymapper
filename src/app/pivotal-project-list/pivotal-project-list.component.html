@@ -6,9 +6,10 @@
 
       <li class="pivotal-project-list-project-list-item"
           *ngFor="let projectData of (user | async).projects">
-        <div>
-          <span> {{ projectData.project_name }} (id: {{ projectData.project_id }} ) </span>
-          <button mat-raised-button
+        <div class="pivotal-project-list-button-container">
+          <span class="pivotal-project-list-button-label"> {{ projectData.project_name }} (id: {{ projectData.project_id }} ) </span>
+          <button class="pivotal-project-list-button"
+                  mat-raised-button
                   color="primary"
                   (click)="fetchProjectStories($event, projectData.project_id)">Obtener historias</button>
         </div>
