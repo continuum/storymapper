@@ -7,13 +7,16 @@
 <div class="app-component-main-body">
   <app-pivotal-api-key-input></app-pivotal-api-key-input>
 
-  <div style="color: darkgrey;">
-      <ng-template *ngIf="!( user | async ); else withUser">
+  <div style="color: darkgrey; ">
+
+      <!-- <ng-template *ngIf="( user | async ); else withoutUser"> -->
+          <app-pivotal-project-list *ngIf="( user | async); else withoutUser"></app-pivotal-project-list>
+      <!-- </ng-template> -->
+
+      <ng-template #withoutUser>
         <span>Sin usuario</span>
       </ng-template>
-      <ng-template #withUser>
-          <app-pivotal-project-list></app-pivotal-project-list>
-      </ng-template>
+
   </div>
 </div>
 

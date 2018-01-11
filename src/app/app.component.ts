@@ -12,6 +12,7 @@ export class AppComponent {
   user: Observable<any>;
 
   constructor(private _pivotalDataService: PivotalDataService) {
+    const self = this;
     this.user = this._pivotalDataService.user;
   }
 }

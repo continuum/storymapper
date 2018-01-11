@@ -44,25 +44,17 @@ export class PivotalProjectStoriesTableComponent implements OnInit {
   //   return this.projects.map(projects => Object.keys(projects[projectId].byTag));
 
     return this.projects.map(projects => projects[projectId].allTags);
-
   }
 
   getStoriesByTag(projectId, tag, release?) {
-    // debugger
-    // console.log("TAG " + tag)
-   // debugger
     if (release) {
-       return this.projects.scan((acc, projects) => {
-                              // console.log("scanning")
-                              // console.log(projects[projectId].byTag[tag] )
-                              return acc.concat(projects[projectId].byTag[tag]);
-                            }, [])
-                           .filter(story => {
-                            //  // debugger;
-                            //  console.log("STORY");
-                            //  console.log(story)
-                             return story[0].release === release;
-                            });
+       return this.projects.map(x => x[projectId])
+                           .startWith([])
+                           .scan((acc, projects) =>
+                              acc.concat(projects.byTag[tag])
+                                 .filter(st => st.story_type !== 'release'
+                                            && st.release === release)
+                            );
     }
     return this.projects.map(projects => projects[projectId].byTag[tag]);
   }

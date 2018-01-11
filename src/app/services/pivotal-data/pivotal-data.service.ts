@@ -4,18 +4,20 @@ import { Headers } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishReplay';
+import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/share';
 
 @Injectable()
 export class PivotalDataService {
   private _pivotalApiToken = '';
   private PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5/';
-  private _user: Observable<any> = null;
+  private _user: Subject<any> = null;
   private _projects: any;
   private _projectsScanner: Subject<any> = new Subject<any>();
   /*
@@ -25,43 +27,40 @@ export class PivotalDataService {
   constructor(private _pivotalAuthService: PivotalAuthService,
               private _http: HttpClient) {
 
+    this._user = new Subject<any>().map(x => x)
+                                   .publishReplay(1)
+                                   .refCount();
     const emptyProjectsHash = {};
-
-
-
-    this._pivotalApiToken = this._pivotalAuthService.getApiToken();
-    this._user = this.fetchUserData();
-    this._projects = this._projectsScanner.startWith(emptyProjectsHash)
-                                          .scan((projectsAccumulator, project) => {
-                                            // console.log("projectScanner");
-                                            // console.log(project);
-                                            return { ...projectsAccumulator, ...project };
-                                          })
-                                          .publishReplay(1)
-                                          .refCount();
+    this.fetchUserData();
+    this._projects = this._projectsScanner
+                         .startWith(emptyProjectsHash)
+                         .scan((projects, project) => ({ ...projects, ...project }))
+                         .publishReplay(1)
+                         .refCount();
   }
 
 
   setHeaders() {
-    return new HttpHeaders().set('X-TrackerToken', (this._pivotalApiToken || ""));
+    const pivotalToken = this._pivotalAuthService.getApiToken() || "";
+    return new HttpHeaders().set('X-TrackerToken', pivotalToken);
   }
 
-  // fetchProjectData(projectId: number) {
-  //   return this._http
-  //              .get(`${this.PIVOTAL_API_URL}/`)
-  // }
+
+  refreshUserData() {
+    console.log("refreshing user data");
+    this.fetchUserData();
+  }
 
   fetchUserData() {
-    const headers =  this.setHeaders();
-    const aaa = this._http
-                    .get(`${this.PIVOTAL_API_URL}/me`, { headers })
-                    .catch(e => {
-                      console.log(e);
-                      return Observable.of(null);
-                    })
-                    .publishReplay(1)
-                    .refCount();
-    return aaa;
+    const headers = this.setHeaders();
+    this._http.get(`${this.PIVOTAL_API_URL}/me`, { headers })
+              .map(x => x)
+              .catch(e => {
+                console.log(e);
+                return Observable.of(null);
+              })
+              .subscribe(y => this._user.next(y));
+    console.log("fetching user data");
   }
 
   get user() {
@@ -72,29 +71,13 @@ export class PivotalDataService {
     return this._projects;
   }
 
-  refreshUser(): void {
-    this._user = this.fetchUserData();
-  }
-
-  doSomethingWithTheToken() {
-    console.log(this._pivotalApiToken);
-  }
 
   getProjectStories(projectId: Number) {
     const storiesUrl = `${this.PIVOTAL_API_URL}projects/${projectId}/stories/?limit=1000`;
-    const self = this;
     return this._http.get(storiesUrl, { headers: this.setHeaders() })
-               .map(self.transformStoriesIntoProject.bind(self, projectId))
-               .subscribe((project: object) => { return self._projectsScanner.next(project); });
-               //.unsubscribe();
+               .map(this.transformStoriesIntoProject.bind(this, projectId))
+               .subscribe((project: object) => this._projectsScanner.next(project));
   }
-
-  // getProjectLabels(projectId: Number) {
-  //   const labelsUrl = `https://www.pivotaltracker.com/services/v5/projects/${projectId}/labels/`;
-  //   return this._http.get(labelsUrl, {headers: this.setHeaders() })
-  //              .publishReplay(1)
-  //              .refCount();
-  // }
 
   transformStoriesIntoProject(projectId: number, stories: any) {
     return {
@@ -107,67 +90,52 @@ export class PivotalDataService {
   }
 
   groupStoriesByTag(stories: Array<any>) {
-    // const tags = stories.
-//    const tags =
-
     // For each story, add a key noting the Release it belongs to
-    const storiesWithReleaseName = stories.reduce((acc, story, index) => {
-        // If a story is a release, return it with its index
-        // among all of the stories.
-        return story.story_type === 'release' ? acc.push({...story, index}) && acc : acc;
-      }, [])
-      .map(rel => [rel.index, rel.name])
-      .reduce((acc, elem, arrayIndex, array) => {
-        // Then loop over all of the stories and
-        // put the ones with indexes below (someRelease)
-        // in a key with someReleases.name
-        // then, group those stories by label.
-        const [releaseIndex, releaseName] = elem;
-        const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
-        const storiesWithRelease = stories.slice(previousReleaseIndex, releaseIndex)
-                                          .map(story => {
-                                            story["release"] = releaseName;
-                                            return story;
-                                          });
-        return acc.concat(storiesWithRelease);
-      }, []);
+    const storiesWithReleaseName = this.addReleaseNameToStories(stories);
 
-    const tagList = this.getTagList(stories);
-
-    console.log("TAGSLISTS");
-    console.log(tagList);
-    // debugger
-    const storiesWithNoTag = stories.filter(story => story.labels.length === 0);
+    const tagList = this.getTagList(storiesWithReleaseName);
+    // const storiesWithNoTag = stories.filter(story => story.labels.length === 0);
 
     const storiesByTag = Array.from(tagList).reduce((acc, tag) => {
-      const storiesWithTag = stories.filter(story => new Set(story.labels.map(l => l.name)).has(tag));
+      const storiesWithTag = storiesWithReleaseName.filter(story => new Set(story.labels.map(l => l.name)).has(tag));
       if (acc[`${tag}`]) { return acc[`${tag}`].push(storiesWithTag) && acc; }
       acc[`${tag}`] = storiesWithTag;
       return acc;
     }, {});
-
-    console.log("STORIES BY TAG");
-    console.log(storiesByTag);
-
-
-
-
     return storiesByTag;
+  }
+
+
+  addReleaseNameToStories(stories) {
+    return stories.reduce((acc, story, index) => {
+                    // If a story is a release, return it with its index
+                    // among all of the stories.
+                    return story.story_type === 'release' ? acc.push({...story, index}) && acc : acc;
+                  }, [])
+                  .map(rel => [rel.index, rel.name])
+                  .reduce((acc, elem, arrayIndex, array) => {
+                    // Then loop over all of the stories and
+                    // put the ones with indexes below (someRelease)
+                    // in a key with someReleases.name
+                    const [releaseIndex, releaseName] = elem;
+                    const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
+                    const storiesWithRelease = stories.slice(previousReleaseIndex, releaseIndex)
+                                                      .map(story => {
+                                                        return {...story, release: releaseName};
+                                                      });
+                    return acc.concat(storiesWithRelease);
+                  }, []);
   }
 
   getTagList(stories) {
     return stories.reduce((tags, story) => {
-      if (story.labels.length === 0) {
+      if (story.labels.length === 0 && story.story_type !== 'release') {
         story.labels.push({ name: "No tag" });
         tags.add("No tag");
       }
       story.labels.forEach(label => tags.add(label.name));
       return tags;
     }, new Set());
-  }
-
-  refreshApiToken() {
-    this._pivotalApiToken = this._pivotalAuthService.getApiToken();
   }
 
 }
