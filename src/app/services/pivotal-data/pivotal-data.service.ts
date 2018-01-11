@@ -8,12 +8,14 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/of';
 
 @Injectable()
 export class PivotalDataService {
   private _pivotalApiToken = '';
   private PIVOTAL_API_URL = 'https://www.pivotaltracker.com/services/v5/';
-  private _user: Observable<any>;
+  private _user: Observable<any> = null;
   private _projects: any;
   private _projectsScanner: Subject<any> = new Subject<any>();
   /*
@@ -41,7 +43,7 @@ export class PivotalDataService {
 
 
   setHeaders() {
-    return new HttpHeaders().set('X-TrackerToken', this._pivotalApiToken);
+    return new HttpHeaders().set('X-TrackerToken', (this._pivotalApiToken || ""));
   }
 
   // fetchProjectData(projectId: number) {
@@ -50,11 +52,16 @@ export class PivotalDataService {
   // }
 
   fetchUserData() {
-    const headers = this.setHeaders();
-    return this._http
-                .get(`${this.PIVOTAL_API_URL}/me`, { headers })
-                .publishReplay(1)
-                .refCount();
+    const headers =  this.setHeaders();
+    const aaa = this._http
+                    .get(`${this.PIVOTAL_API_URL}/me`, { headers })
+                    .catch(e => {
+                      console.log(e);
+                      return Observable.of(null);
+                    })
+                    .publishReplay(1)
+                    .refCount();
+    return aaa;
   }
 
   get user() {
