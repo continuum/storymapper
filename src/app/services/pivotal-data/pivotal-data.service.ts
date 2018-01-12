@@ -4,14 +4,17 @@ import { Headers } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishReplay';
-import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/share';
+
+// import { ConnectableObservable } from 'rxjs/observable/ConnectableObservable';
+// import { Observer } from 'rxjs/Observer';
+
+
 
 @Injectable()
 export class PivotalDataService {
@@ -26,10 +29,9 @@ export class PivotalDataService {
   */
   constructor(private _pivotalAuthService: PivotalAuthService,
               private _http: HttpClient) {
+    this._user = new Subject<any>().publishReplay(1)
+                                   .refCount() as Subject<any>;
 
-    this._user = new Subject<any>().map(x => x)
-                                   .publishReplay(1)
-                                   .refCount();
     const emptyProjectsHash = {};
     this.fetchUserData();
     this._projects = this._projectsScanner
@@ -52,15 +54,12 @@ export class PivotalDataService {
   }
 
   fetchUserData() {
-    const headers = this.setHeaders();
-    this._http.get(`${this.PIVOTAL_API_URL}/me`, { headers })
-              .map(x => x)
+    this._http.get(`${this.PIVOTAL_API_URL}/me`, { headers: this.setHeaders() })
               .catch(e => {
                 console.log(e);
                 return Observable.of(null);
               })
-              .subscribe(y => this._user.next(y));
-    console.log("fetching user data");
+              .subscribe(this._user);
   }
 
   get user() {
@@ -80,11 +79,12 @@ export class PivotalDataService {
   }
 
   transformStoriesIntoProject(projectId: number, stories: any) {
+    const storiesWithDefaultReleases = stories.concat(this.defaultReleases());
     return {
       [projectId]: {
-        byTag: this.groupStoriesByTag(stories),
-        allReleases: stories.filter(st => st.story_type === 'release').map(st => st.name),
-        allTags: Array.from(this.getTagList(stories))
+        byTag: this.groupStoriesByTag(storiesWithDefaultReleases),
+        allReleases: storiesWithDefaultReleases.filter(st => st.story_type === 'release').map(st => st.name),
+        allTags: Array.from(this.getTagList(storiesWithDefaultReleases))
       }
     };
   }
@@ -118,6 +118,7 @@ export class PivotalDataService {
                     // put the ones with indexes below (someRelease)
                     // in a key with someReleases.name
                     const [releaseIndex, releaseName] = elem;
+                   // if (releaseName === 'Sin lanzamiento planeado') debugger;
                     const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
                     const storiesWithRelease =
                       stories.slice(previousReleaseIndex, releaseIndex)
@@ -135,6 +136,11 @@ export class PivotalDataService {
       story.labels.forEach(label => tags.add(label.name));
       return tags;
     }, new Set());
+  }
+
+  defaultReleases() {
+    return [{story_type: 'release', name: 'Sin lanzamiento planeado', labels: []}
+            ];
   }
 
 }
