@@ -49,7 +49,6 @@ export class PivotalDataService {
 
 
   refreshUserData() {
-    console.log("refreshing user data");
     this.fetchUserData();
   }
 
