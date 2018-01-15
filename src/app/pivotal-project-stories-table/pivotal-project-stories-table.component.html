@@ -2,9 +2,33 @@
 <ng-container *ngIf="(projects | async)[projectId]">
 
 
-    <div
-         id="storiesTable"
-         #storiesTable>
+    <div id="storiesTable" #storiesTable>
+
+      <div class="releases-checkbox-container">
+
+        <h2>Releases del proyecto</h2>
+
+        <ng-container  *ngFor="let release of (projects | async)[projectId].allReleases">
+          <input type="checkbox"
+                 checked="true"
+                 [value]=release
+                 (click)="releaseCheckboxesHandler($event)"
+                 >
+          <label>{{ release }}</label>
+        </ng-container>
+
+      </div>
+
+      <div class="tags-checkbox-container">
+
+          <h2>Tags del proyecto</h2>
+
+          <ng-container  *ngFor="let tag of (projects | async)[projectId].allTags">
+            <input type="checkbox" checked="true" [value]=tag>
+            <label>{{ tag }}</label>
+          </ng-container>
+
+      </div>
 
       <div id="storiesTableHeader" #storiesTableHeader>
           <span
@@ -22,23 +46,28 @@
             [ngClass]=release>
 
             <div class="stories-table-column-container">
+
               <span *ngFor="let tag of (getProjectTags(projectId) | async);"
                 class="stories-table-column"
                 [ngClass]=tag>
+
                 <span
                   *ngFor="let story of (getStoriesByTag(projectId, tag, release) | async);"
                   class="stories-table-row"
                   [ngClass]=story.name>
                   {{ story.name }}
-
-
                 </span>
+
               </span>
+
             </div>
+
             <span class="release-name-ribbon">
               {{ release }}
             </span>
+
         </div>
+
       </div>
 
 

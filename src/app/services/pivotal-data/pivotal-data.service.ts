@@ -11,11 +11,6 @@ import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/of';
 
-// import { ConnectableObservable } from 'rxjs/observable/ConnectableObservable';
-// import { Observer } from 'rxjs/Observer';
-
-
-
 @Injectable()
 export class PivotalDataService {
   private _pivotalApiToken = '';
@@ -93,8 +88,6 @@ export class PivotalDataService {
     const storiesWithReleaseName = this.addReleaseNameToStories(stories);
 
     const tagList = this.getTagList(storiesWithReleaseName);
-    // const storiesWithNoTag = stories.filter(story => story.labels.length === 0);
-
     const storiesByTag = Array.from(tagList).reduce((acc, tag) => {
       const storiesWithTag = storiesWithReleaseName.filter(story => new Set(story.labels.map(l => l.name)).has(tag));
       if (acc[`${tag}`]) { return acc[`${tag}`].push(storiesWithTag) && acc; }
@@ -117,7 +110,6 @@ export class PivotalDataService {
                     // put the ones with indexes below (someRelease)
                     // in a key with someReleases.name
                     const [releaseIndex, releaseName] = elem;
-                   // if (releaseName === 'Sin lanzamiento planeado') debugger;
                     const previousReleaseIndex = arrayIndex > 0 ? array[arrayIndex - 1][0] : 0;
                     const storiesWithRelease =
                       stories.slice(previousReleaseIndex, releaseIndex)
@@ -138,8 +130,10 @@ export class PivotalDataService {
   }
 
   defaultReleases() {
-    return [{story_type: 'release', name: 'Sin lanzamiento planeado', labels: []}
-            ];
+    return [
+            { story_type: 'release', name: 'Sin lanzamiento planeado',
+              labels: []}
+           ];
   }
 
 }
