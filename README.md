@@ -6,6 +6,11 @@ This projects consists of a story mapper that uses [PivotalTracker's API](https:
 
 To do this, it requires that you provide it with your Pivotal Tracker API token, which you may obtain [in the API section of this page](https://www.pivotaltracker.com/profile)
 
+Project status (as of Jan 15th, 2018):
+
+Currently you can see all of a project's stories grouped by tag and release.
+WIP: Filtering by tag/release
+
 __________________________
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.3.
