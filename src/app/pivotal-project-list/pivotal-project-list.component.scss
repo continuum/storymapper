@@ -1,23 +1,32 @@
+.pivotal-project-list-component-container {
+  width: 70%;
+  margin: auto;
+}
 
 .pivotal-project-list-project-list-item {
   list-style: none;
+  display: flex;
+  flex-direction: column;
 }
 .pivotal-project-list-project-list {
   display: inline-block;
 }
 .pivotal-project-list-button-container {
-
   // TODO: Fix alignment of buttons
-
-
-  // width: 40%;
-  // margin:auto;
+  margin: auto;
+  display: flex;
+  width: 100%;
 }
 .pivotal-project-list-button-label {
     // TODO: Fix alignment of buttons
-  // float: left;
+   text-align: center;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
 }
 .pivotal-project-list-button {
-    // TODO: Fix alignment of buttons
-  // float: right;
+   margin-left: auto;
+   &:hover {
+    background-color:#FF5722;
+   }
 }

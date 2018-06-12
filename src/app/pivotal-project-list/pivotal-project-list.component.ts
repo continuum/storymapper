@@ -1,5 +1,5 @@
-import {PivotalAuthService} from '../services/auth/pivotal-auth.service';
-import {PivotalDataService} from '../services/pivotal-data/pivotal-data.service';
+import { PivotalAuthService } from '../services/auth/pivotal-auth.service';
+import { PivotalDataService } from '../services/pivotal-data/pivotal-data.service';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
