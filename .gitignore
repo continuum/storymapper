@@ -34,6 +34,8 @@
 npm-debug.log
 testem.log
 /typings
+.built
+.noded
 
 # e2e
 /e2e/*.js
